@@ -10,6 +10,9 @@ const config = {
   enableModeration: process.env.ENABLE_MODERATION === "true",
   openAIModerationApiKey: process.env.OPENAI_MODERATION_KEY,
   fileMaxSizeMB: Number(process.env.FILE_MAX_SIZE_MB || 10),
+  gitHubToken: process.env.GITHUB_TOKEN,
+  enableCodeReview: process.env.ENABLE_CODE_REVIEW === "true",
+  projectRoot: process.env.PROJECT_ROOT || process.cwd(),
 };
 
 export default config;

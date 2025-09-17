@@ -6,6 +6,8 @@ import config from "../config";
 import { Application, ActionPlanner, OpenAIModel, PromptManager } from "@microsoft/teams-ai";
 import { webSearch, formatCitedResponse } from "../services/search";
 import { moderateText } from "../services/moderation";
+import { analyzeCode, reviewCode, generateCode, findProjectFiles } from "../services/codeAnalysis";
+import { getGitStatus, commitChanges, createBranch, getCommitHistory, analyzeProject, getEnvironments } from "../services/projectManager";
 import axios from "axios";
 import * as fs from "fs";
 import * as os from "os";
@@ -55,6 +57,15 @@ function detectIntent(text: string): string {
   if (/\bcard\b/.test(t) || /^generate card/.test(t)) return "card";
   if (/\bsummary\b|summarize/.test(t)) return "summarize";
   if (/help|commands/.test(t)) return "help";
+  if (/^review code|code review/.test(t)) return "code_review";
+  if (/^analyze|analysis/.test(t)) return "code_analysis";
+  if (/^generate code|create code/.test(t)) return "code_generate";
+  if (/^git status|status/.test(t)) return "git_status";
+  if (/^commit/.test(t)) return "git_commit";
+  if (/^branch/.test(t)) return "git_branch";
+  if (/^project|dashboard/.test(t)) return "project_info";
+  if (/^deploy|deployment/.test(t)) return "deployment";
+  if (/^env|environment/.test(t)) return "environment";
   return "chat";
 }
 
@@ -113,17 +124,55 @@ function parseCsv(buf: Buffer): Promise<string> {
   });
 }
 
-function buildAdaptiveCard(title: string, body: string) {
+function buildDeveloperDashboard(projectMetrics: any) {
   return {
     type: 'AdaptiveCard',
     version: '1.5',
     body: [
-      { type: 'TextBlock', text: title, weight: 'Bolder', size: 'Medium' },
-      { type: 'TextBlock', text: body, wrap: true }
+      { type: 'TextBlock', text: '🚀 Developer Dashboard', weight: 'Bolder', size: 'Large' },
+      { type: 'ColumnSet', columns: [
+        { type: 'Column', width: 'stretch', items: [
+          { type: 'TextBlock', text: `📁 ${projectMetrics.totalFiles} Files`, weight: 'Bolder' },
+          { type: 'TextBlock', text: `📝 ${projectMetrics.totalLines.toLocaleString()} Lines` },
+          { type: 'TextBlock', text: `👥 ${projectMetrics.contributors.length} Contributors` }
+        ]},
+        { type: 'Column', width: 'stretch', items: [
+          { type: 'TextBlock', text: `📦 Dependencies: ${Object.keys(projectMetrics.dependencies).length}` },
+          { type: 'TextBlock', text: `🔧 Dev Dependencies: ${Object.keys(projectMetrics.devDependencies).length}` },
+          { type: 'TextBlock', text: `💾 Last Commit: ${projectMetrics.lastCommit.split(' - ')[0]}` }
+        ]}
+      ]},
+      { type: 'TextBlock', text: '💻 Languages:', weight: 'Bolder', spacing: 'Medium' },
+      { type: 'TextBlock', text: Object.entries(projectMetrics.languages).map(([ext, count]) => `${ext}: ${count}`).join(', '), wrap: true },
     ],
     actions: [
-      { type: 'Action.Submit', title: 'Help', data: { command: 'help' } },
-      { type: 'Action.Submit', title: 'Search docs', data: { command: 'search Teams AI library' } }
+      { type: 'Action.Submit', title: '📊 Analyze Code', data: { command: 'analyze *.ts' } },
+      { type: 'Action.Submit', title: '🔍 Git Status', data: { command: 'git status' } },
+      { type: 'Action.Submit', title: '🌐 Deploy', data: { command: 'deploy' } },
+      { type: 'Action.Submit', title: '⚙️ Environments', data: { command: 'env' } }
+    ],
+    $schema: 'http://adaptivecards.io/schemas/adaptive-card.json'
+  };
+}
+
+function buildGitStatusCard(gitStatus: any) {
+  return {
+    type: 'AdaptiveCard',
+    version: '1.5',
+    body: [
+      { type: 'TextBlock', text: `🌿 Branch: ${gitStatus.current}`, weight: 'Bolder', size: 'Medium' },
+      { type: 'TextBlock', text: `📈 Ahead: ${gitStatus.ahead} | 📉 Behind: ${gitStatus.behind}` },
+      { type: 'TextBlock', text: '📝 Modified Files:', weight: 'Bolder', spacing: 'Medium' },
+      ...gitStatus.files.slice(0, 5).map((f: any) => ({
+        type: 'TextBlock',
+        text: `${f.staged ? '✅' : '⚠️'} ${f.path} (${f.status})`,
+        wrap: true
+      }))
+    ],
+    actions: [
+      { type: 'Action.Submit', title: '💾 Commit All', data: { command: 'commit Auto-commit via bot' } },
+      { type: 'Action.Submit', title: '🌿 New Branch', data: { command: 'branch feature/new-feature' } },
+      { type: 'Action.Submit', title: '📜 History', data: { command: 'git log' } }
     ],
     $schema: 'http://adaptivecards.io/schemas/adaptive-card.json'
   };
@@ -146,8 +195,133 @@ app.message(/.*/i, async (context, state) => {
 
   switch (intent) {
     case 'help':
-      await context.sendActivity(MessageFactory.text('Commands: search <query>, generate card <topic>, upload a file, summarize <text>.'));
+      await context.sendActivity(MessageFactory.text(`🤖 **Developer Assistant Commands:**
+
+**📁 File & Code:**
+• \`analyze <file>\` - Code analysis & quality check
+• \`review code <paste code>\` - AI-powered code review
+• \`generate code <requirements>\` - Generate code from requirements
+• \`search <query>\` - Web search with citations
+
+**🔧 Git & Project:**
+• \`git status\` - Show git status with interactive card
+• \`commit <message>\` - Commit changes
+• \`branch <name>\` - Create new branch
+• \`project\` or \`dashboard\` - Show project metrics
+
+**🚀 Deployment & Environment:**
+• \`deploy\` - Show deployment options
+• \`env\` - List environment configurations
+
+**📎 Files:**
+• Upload files (PDF, CSV, TXT, MD) for analysis
+• \`generate card <topic>\` - Create interactive cards
+• \`summarize <text>\` - Summarize content`));
       return;
+
+    case 'code_analysis': {
+      const pattern = text.replace(/^analyze\s*/i, '').trim() || '**/*.ts';
+      const files = await findProjectFiles(pattern);
+      
+      if (files.length === 0) {
+        await context.sendActivity('No files found matching pattern.');
+        return;
+      }
+      
+      const results = [];
+      for (const file of files.slice(0, 3)) { // Limit to 3 files
+        const analysis = await analyzeCode(file);
+        results.push(`**${file}:**\n- ${analysis.issues.length} issues\n- ${analysis.metrics.lines} lines, ${analysis.metrics.functions} functions\n- Complexity: ${analysis.metrics.complexity}`);
+      }
+      
+      await context.sendActivity(MessageFactory.text(`📊 **Code Analysis Results:**\n\n${results.join('\n\n')}`));
+      return;
+    }
+
+    case 'code_review': {
+      const code = text.replace(/^(review code|code review)\s*/i, '').trim();
+      if (!code) {
+        await context.sendActivity('Please provide code to review after the command.');
+        return;
+      }
+      
+      const review = await reviewCode(code);
+      const response = `🔍 **Code Review (Score: ${review.score}/10)**\n\n${review.summary}\n\n**Suggestions:**\n${review.suggestions.map(s => `• ${s}`).join('\n')}\n\n**Issues:**\n${review.issues.map(i => `⚠️ ${i}`).join('\n')}`;
+      await context.sendActivity(MessageFactory.text(response));
+      return;
+    }
+
+    case 'code_generate': {
+      const requirements = text.replace(/^(generate code|create code)\s*/i, '').trim();
+      if (!requirements) {
+        await context.sendActivity('Please specify requirements for code generation.');
+        return;
+      }
+      
+      const code = await generateCode(requirements);
+      await context.sendActivity(MessageFactory.text(`🛠️ **Generated Code:**\n\n\`\`\`typescript\n${code}\n\`\`\``));
+      return;
+    }
+
+    case 'git_status': {
+      const gitStatus = await getGitStatus();
+      const card = buildGitStatusCard(gitStatus);
+      await context.sendActivity({ attachments: [{ contentType: 'application/vnd.microsoft.card.adaptive', content: card }] });
+      return;
+    }
+
+    case 'git_commit': {
+      const message = text.replace(/^commit\s*/i, '').trim() || 'Auto-commit via bot';
+      const success = await commitChanges(message);
+      await context.sendActivity(MessageFactory.text(success ? `✅ Committed with message: "${message}"` : '❌ Commit failed'));
+      return;
+    }
+
+    case 'git_branch': {
+      const branchName = text.replace(/^branch\s*/i, '').trim();
+      if (!branchName) {
+        await context.sendActivity('Please specify branch name.');
+        return;
+      }
+      
+      const success = await createBranch(branchName);
+      await context.sendActivity(MessageFactory.text(success ? `✅ Created and switched to branch: ${branchName}` : '❌ Branch creation failed'));
+      return;
+    }
+
+    case 'project_info': {
+      const metrics = await analyzeProject();
+      const card = buildDeveloperDashboard(metrics);
+      await context.sendActivity({ attachments: [{ contentType: 'application/vnd.microsoft.card.adaptive', content: card }] });
+      return;
+    }
+
+    case 'deployment': {
+      await context.sendActivity(MessageFactory.text(`🚀 **Deployment Options:**
+
+**Microsoft 365 Agents Toolkit:**
+• \`npm run dev:teamsfx:testtool\` - Run in playground
+• \`teamsapp provision --env sandbox\` - Provision resources
+• \`teamsapp deploy --env sandbox\` - Deploy to Azure
+• \`teamsapp publish --env sandbox\` - Publish to Teams store
+
+**Tasks Available:**
+• F5 in VS Code to debug in playground
+• Use VS Code command palette for toolkit commands
+• Check .vscode/tasks.json for all available tasks`));
+      return;
+    }
+
+    case 'environment': {
+      const environments = getEnvironments();
+      const envInfo = environments.map(env => 
+        `**${env.name}** ${env.active ? '(Active)' : ''}\n• ${Object.keys(env.variables).length} variables`
+      ).join('\n\n');
+      
+      await context.sendActivity(MessageFactory.text(`⚙️ **Environment Configurations:**\n\n${envInfo}`));
+      return;
+    }
+
     case 'search': {
       const q = text.replace(/^search\s*/i, '').trim();
       const results = await webSearch(q);
@@ -164,7 +338,8 @@ app.message(/.*/i, async (context, state) => {
     }
     case 'card': {
       const topic = text.replace(/generate card/i, '').trim() || 'Info';
-      const card = buildAdaptiveCard('Generated Card', `Topic: ${topic}`);
+      const metrics = await analyzeProject(); // Get real project data for demo
+      const card = buildDeveloperDashboard(metrics);
       await context.sendActivity({ attachments: [{ contentType: 'application/vnd.microsoft.card.adaptive', content: card }] });
       return;
     }

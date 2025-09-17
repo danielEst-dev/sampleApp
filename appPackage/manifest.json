@@ -39,24 +39,40 @@
                     ],
                     "commands": [
                         {
-                            "title": "How can you help me?",
-                            "description": "How can you help me?"
+                            "title": "🤖 Help - Show all commands",
+                            "description": "Display comprehensive command list for development assistance"
                         },
                         {
-                            "title": "How to develop agent for Teams?",
-                            "description": "How can I develop agents with Microsoft 365 Agents Toolkit?"
+                            "title": "📊 project - Project dashboard",
+                            "description": "Show project metrics, files, git status, and quick actions"
                         },
                         {
-                            "title": "search <query>",
-                            "description": "Perform a web search and return summarized results with citations."
+                            "title": "🔍 analyze <pattern> - Code analysis",
+                            "description": "Analyze code quality, metrics, and issues (e.g., analyze *.ts)"
                         },
                         {
-                            "title": "upload a file",
-                            "description": "Upload and analyze a document (PDF, CSV, TXT)."
+                            "title": "⚡ review code <code> - AI code review",
+                            "description": "Get AI-powered code review with suggestions and scoring"
                         },
                         {
-                            "title": "generate card <topic>",
-                            "description": "Generate an adaptive card about a topic."
+                            "title": "🛠️ generate code <requirements>",
+                            "description": "Generate TypeScript code based on your requirements"
+                        },
+                        {
+                            "title": "🌿 git status - Git status card",
+                            "description": "Interactive git status with commit and branch options"
+                        },
+                        {
+                            "title": "🚀 deploy - Deployment guide",
+                            "description": "Show deployment options and Teams Toolkit commands"
+                        },
+                        {
+                            "title": "🔍 search <query> - Web search",
+                            "description": "Search the web with AI summarization and citations"
+                        },
+                        {
+                            "title": "📎 Upload files for analysis",
+                            "description": "Upload PDF, CSV, TXT, MD files for processing and analysis"
                         }
                     ]
                 }

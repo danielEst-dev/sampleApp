@@ -1,70 +1,247 @@
-# Overview of the Basic AI Chatbot template
+# Advanced Developer Assistant Agent for Microsoft Teams
 
-This app template is built on top of [Teams AI library](https://aka.ms/teams-ai-library).
-It showcases an agent app that responds to user questions like ChatGPT. This enables your users to talk with the AI agent in Teams.
+This project is an enhanced AI-powered developer assistant built with the Microsoft 365 Agents Toolkit and Teams AI Library. It provides comprehensive development workflow automation, code analysis, project management, and deployment assistance directly within Microsoft Teams.
 
-## Get started with the template
+## 🚀 Features
 
-> **Prerequisites**
->
-> To run the template in your local dev machine, you will need:
->
-> - [Node.js](https://nodejs.org/), supported versions: 18, 20, 22.
-> - [Microsoft 365 Agents Toolkit Visual Studio Code Extension](https://aka.ms/teams-toolkit) latest version or [Microsoft 365 Agents Toolkit CLI](https://aka.ms/teamsfx-toolkit-cli).
-> - Prepare your own [Azure OpenAI](https://aka.ms/oai/access) resource.
+### 🧠 AI-Powered Capabilities
+- **Smart Chat**: Context-aware conversations with Azure OpenAI integration
+- **Code Review**: AI-powered code analysis with suggestions and quality scoring
+- **Code Generation**: Generate TypeScript code from natural language requirements
+- **Web Search**: Real-time search with AI summarization and citations
+- **Safety Guardrails**: Content moderation and filtering
 
-> For local debugging using Microsoft 365 Agents Toolkit CLI, you need to do some extra steps described in [Set up your Microsoft 365 Agents Toolkit CLI for local debugging](https://aka.ms/teamsfx-cli-debugging).
+### 📁 File & Code Analysis
+- **Multi-format Support**: Process PDF, CSV, TXT, MD files
+- **Code Quality Analysis**: ESLint integration with metrics tracking
+- **Syntax Checking**: Real-time code validation and error detection
+- **Project Insights**: Comprehensive codebase analysis and statistics
 
-1. First, select the Microsoft 365 Agents Toolkit icon on the left in the VS Code toolbar.
-1. In file *env/.env.playground.user*, fill in your Azure OpenAI key `SECRET_AZURE_OPENAI_API_KEY=<your-key>`, endpoint `AZURE_OPENAI_ENDPOINT=<your-endpoint>`, and deployment name `AZURE_OPENAI_DEPLOYMENT_NAME=<your-deployment>`.
-1. Press F5 to start debugging which launches your app in Microsoft 365 Agents Playground using a web browser. Select `Debug in Microsoft 365 Agents Playground`.
-1. You can send any message to get a response from the agent.
+### 🔧 Development Workflow
+- **Git Integration**: Status, commits, branching with interactive cards
+- **Environment Management**: Multi-environment configuration handling
+- **Deployment Assistance**: Teams Toolkit deployment guidance
+- **Project Dashboard**: Real-time metrics and quick actions
 
-**Congratulations**! You are running an application that can now interact with users in Microsoft 365 Agents Playground:
+### 🎨 Interactive UI
+- **Adaptive Cards**: Rich, interactive dashboard interfaces
+- **Developer Dashboard**: Project metrics, git status, quick actions
+- **Command Palette**: Comprehensive command discovery and execution
+- **File Upload Interface**: Drag-and-drop file analysis
 
-![Basic AI Chatbot](https://github.com/user-attachments/assets/984af126-222b-4c98-9578-0744790b103a)
+## 📋 Commands Reference
 
-## What's included in the template
+### 🤖 Getting Help
+- `help` - Show comprehensive command list
 
-| Folder       | Contents                                            |
-| - | - |
-| `.vscode`    | VSCode files for debugging                          |
-| `appPackage` | Templates for the application manifest        |
-| `env`        | Environment files                                   |
-| `infra`      | Templates for provisioning Azure resources          |
-| `src`        | The source code for the application                 |
+### 📊 Project Management
+- `project` or `dashboard` - Interactive project metrics dashboard
+- `analyze <pattern>` - Code analysis (e.g., `analyze *.ts`)
+- `env` - List environment configurations
 
-The following files can be customized and demonstrate an example implementation to get you started.
+### 💻 Code Operations
+- `review code <paste code>` - AI-powered code review with scoring
+- `generate code <requirements>` - Generate code from requirements
+- `analyze <file pattern>` - Code quality and metrics analysis
 
-| File                                 | Contents                                           |
-| - | - |
-|`src/index.ts`| Sets up the agent app server.|
-|`src/adapter.ts`| Sets up the agent adapter.|
-|`src/config.ts`| Defines the environment variables.|
-|`src/prompts/chat/skprompt.txt`| Defines the prompt.|
-|`src/prompts/chat/config.json`| Configures the prompt.|
-|`src/app/app.ts`| Handles business logics for the Basic AI Chatbot.|
+### 🌿 Git Operations
+- `git status` - Interactive git status with actions
+- `commit <message>` - Commit changes with specified message
+- `branch <name>` - Create and switch to new branch
+- `git log` - Recent commit history (via status card actions)
 
-The following are Microsoft 365 Agents Toolkit specific project files. You can [visit a complete guide on Github](https://github.com/OfficeDev/TeamsFx/wiki/Teams-Toolkit-Visual-Studio-Code-v5-Guide#overview) to understand how Microsoft 365 Agents Toolkit works.
+### 🚀 Deployment
+- `deploy` - Show deployment options and commands
+- Teams Toolkit integration for provision/deploy/publish
 
-| File                                 | Contents                                           |
-| - | - |
-|`m365agents.yml`|This is the main Microsoft 365 Agents Toolkit project file. The project file defines two primary things:  Properties and configuration Stage definitions. |
-|`m365agents.local.yml`|This overrides `m365agents.yml` with actions that enable local execution and debugging.|
-|`m365agents.playground.yml`| This overrides `m365agents.yml` with actions that enable local execution and debugging in Microsoft 365 Agents Playground.|
+### 🔍 Search & Research
+- `search <query>` - Web search with AI summarization
+- File upload for document analysis and processing
+- `summarize <text>` - AI-powered content summarization
 
-## Extend the template
+### 🎨 UI Generation
+- `generate card <topic>` - Create interactive adaptive cards
+- Automatic dashboard generation with project metrics
 
-You can follow [Build a Basic AI Chatbot in Teams](https://aka.ms/teamsfx-basic-ai-chatbot) to extend the Basic AI Chatbot template with more AI capabilities, like:
-- [Customize prompt](https://aka.ms/teamsfx-basic-ai-chatbot#customize-prompt)
-- [Customize user input](https://aka.ms/teamsfx-basic-ai-chatbot#customize-user-input)
-- [Customize conversation history](https://aka.ms/teamsfx-basic-ai-chatbot#customize-conversation-history)
-- [Customize model type](https://aka.ms/teamsfx-basic-ai-chatbot#customize-model-type)
-- [Customize model parameters](https://aka.ms/teamsfx-basic-ai-chatbot#customize-model-parameters)
-- [Handle messages with image](https://aka.ms/teamsfx-basic-ai-chatbot#handle-messages-with-image)
+## ⚙️ Configuration
 
-## Additional information and references
+### Required Environment Variables
+Add these to your environment files (`env/.env.playground.user`, etc.):
 
-- [Microsoft 365 Agents Toolkit Documentations](https://docs.microsoft.com/microsoftteams/platform/toolkit/teams-toolkit-fundamentals)
-- [Microsoft 365 Agents Toolkit CLI](https://aka.ms/teamsfx-toolkit-cli)
-- [Microsoft 365 Agents Toolkit Samples](https://github.com/OfficeDev/TeamsFx-Samples)
+```bash
+# Azure OpenAI (Required)
+SECRET_AZURE_OPENAI_API_KEY=your_azure_openai_key
+AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/
+AZURE_OPENAI_DEPLOYMENT_NAME=your_deployment_name
+
+# Optional: Enhanced Features
+BING_SEARCH_API_KEY=your_bing_search_key
+ENABLE_MODERATION=true
+OPENAI_MODERATION_KEY=your_openai_moderation_key
+ENABLE_CODE_REVIEW=true
+GITHUB_TOKEN=your_github_token
+FILE_MAX_SIZE_MB=10
+PROJECT_ROOT=./
+```
+
+### Installation & Setup
+
+1. **Install dependencies:**
+```powershell
+npm install
+```
+
+2. **Configure environment:**
+   - Copy environment variables to `env/.env.playground.user`
+   - Ensure Azure OpenAI resource is accessible
+
+3. **Run in development:**
+```powershell
+# Run in Microsoft 365 Agents Playground
+npm run dev:teamsfx:testtool
+
+# Run locally with hot reload
+npm run dev
+```
+
+4. **Debug in VS Code:**
+   - Press F5 and select "Debug in Microsoft 365 Agents Playground"
+   - Use built-in debugging for Teams environment
+
+## 🛠️ Development Workflow
+
+### Local Development
+1. **Start the agent:** `npm run dev:teamsfx:testtool`
+2. **Open playground:** Launches automatically or use `npm run dev:teamsfx:launch-testtool`
+3. **Test commands:** Try `help`, `project`, `git status`
+
+### Deployment
+```powershell
+# Provision Azure resources
+teamsapp provision --env sandbox
+
+# Deploy application
+teamsapp deploy --env sandbox
+
+# Publish to Teams store (optional)
+teamsapp publish --env sandbox
+```
+
+### Using VS Code Tasks
+- **F5:** Debug in playground
+- **Ctrl+Shift+P:** Teams Toolkit commands
+- **Tasks:** Available in VS Code task runner
+
+## 📊 Project Architecture
+
+### Core Components
+- **`src/index.ts`** - Express server and bot endpoint
+- **`src/adapter.ts`** - Teams adapter with error handling  
+- **`src/app/app.ts`** - Main application logic and intent routing
+- **`src/config.ts`** - Environment configuration management
+
+### Services
+- **`src/services/search.ts`** - Web search and citation formatting
+- **`src/services/moderation.ts`** - Content filtering and safety
+- **`src/services/codeAnalysis.ts`** - Code review, analysis, generation
+- **`src/services/projectManager.ts`** - Git operations, project insights
+
+### Infrastructure
+- **`infra/`** - Bicep templates for Azure deployment
+- **`appPackage/`** - Teams app manifest and assets
+- **`m365agents.yml`** - Teams Toolkit configuration
+- **`.vscode/`** - Debug and task configurations
+
+## 🎯 Usage Examples
+
+### Interactive Project Dashboard
+```
+You: project
+Bot: [Shows adaptive card with metrics, git status, quick actions]
+```
+
+### Code Review with AI
+```
+You: review code
+function buggyCode() {
+  var x = undefined;
+  return x.length;
+}
+
+Bot: 🔍 Code Review (Score: 3/10)
+Issues found: Undefined variable access, missing error handling...
+Suggestions: Add null checks, use const/let instead of var...
+```
+
+### Git Operations
+```
+You: git status
+Bot: [Interactive card showing modified files, commit/branch options]
+
+You: commit Updated documentation  
+Bot: ✅ Committed with message: "Updated documentation"
+```
+
+### Code Generation
+```
+You: generate code Create a TypeScript interface for a user profile with name, email, and optional avatar
+
+Bot: 🛠️ Generated Code:
+```typescript
+interface UserProfile {
+  name: string;
+  email: string;
+  avatar?: string;
+}
+```
+
+### Web Search with Citations
+```
+You: search TypeScript best practices 2024
+
+Bot: Here's a summary of TypeScript best practices for 2024...
+[Provides summarized results with numbered citations]
+
+Sources:
+[1] TypeScript Handbook - https://...
+[2] Microsoft TypeScript Guidelines - https://...
+```
+
+## 🔧 Customization
+
+### Adding New Commands
+1. Update `detectIntent()` function in `src/app/app.ts`
+2. Add new case in the main switch statement
+3. Implement command logic
+4. Update help text and manifest commands
+
+### Extending Code Analysis
+1. Modify `src/services/codeAnalysis.ts`
+2. Add new ESLint rules or custom analyzers
+3. Enhance metrics collection
+4. Add support for new file types
+
+### Custom Adaptive Cards
+1. Create card builders in `src/app/app.ts`
+2. Use Adaptive Cards Designer for complex layouts
+3. Add interactive actions and data submission
+
+## 📚 Resources & References
+
+### Microsoft Documentation
+- [Microsoft 365 Agents Toolkit](https://aka.ms/teams-toolkit)
+- [Teams AI Library](https://aka.ms/teams-ai-library)
+- [Adaptive Cards](https://adaptivecards.io/)
+
+### Development
+- [Azure OpenAI Service](https://aka.ms/oai/access)
+- [Bot Framework SDK](https://docs.microsoft.com/azure/bot-service/)
+- [ESLint Configuration](https://eslint.org/docs/user-guide/configuring/)
+
+### Samples & Templates  
+- [Teams Toolkit Samples](https://github.com/OfficeDev/TeamsFx-Samples)
+- [Adaptive Cards Samples](https://adaptivecards.io/samples/)
+
+---
+
+**🎉 Ready to enhance your development workflow with AI-powered assistance in Microsoft Teams!**
