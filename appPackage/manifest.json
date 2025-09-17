@@ -1,0 +1,74 @@
+{
+    "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.21/MicrosoftTeams.schema.json",
+    "manifestVersion": "1.21",
+    "version": "1.0.0",
+    "id": "${{TEAMS_APP_ID}}",
+    "developer": {
+        "name": "My App, Inc.",
+        "websiteUrl": "https://www.example.com",
+        "privacyUrl": "https://www.example.com/privacy",
+        "termsOfUseUrl": "https://www.example.com/termofuse"
+    },
+    "icons": {
+        "color": "color.png",
+        "outline": "outline.png"
+    },
+    "name": {
+        "short": "sampleApp${{APP_NAME_SUFFIX}}",
+        "full": "full name for sampleApp"
+    },
+    "description": {
+        "short": "short description for sampleApp",
+        "full": "full description for sampleApp"
+    },
+    "accentColor": "#FFFFFF",
+    "bots": [
+        {
+            "botId": "${{BOT_ID}}",
+            "scopes": [
+                "team",
+                "groupChat",
+                "personal"
+            ],
+            "supportsFiles": true,
+            "isNotificationOnly": false,
+            "commandLists": [
+                {
+                    "scopes": [
+                        "personal"
+                    ],
+                    "commands": [
+                        {
+                            "title": "How can you help me?",
+                            "description": "How can you help me?"
+                        },
+                        {
+                            "title": "How to develop agent for Teams?",
+                            "description": "How can I develop agents with Microsoft 365 Agents Toolkit?"
+                        },
+                        {
+                            "title": "search <query>",
+                            "description": "Perform a web search and return summarized results with citations."
+                        },
+                        {
+                            "title": "upload a file",
+                            "description": "Upload and analyze a document (PDF, CSV, TXT)."
+                        },
+                        {
+                            "title": "generate card <topic>",
+                            "description": "Generate an adaptive card about a topic."
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "composeExtensions": [],
+    "configurableTabs": [],
+    "staticTabs": [],
+    "permissions": [
+        "identity",
+        "messageTeamMembers"
+    ],
+    "validDomains": []
+}
